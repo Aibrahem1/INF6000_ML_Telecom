@@ -69,23 +69,6 @@ LTE_DATA = pd.read_excel('Datasets/Libyana Dataset JUN25/History Query-LTE KPI o
 LTE_DATA['eNodeB Name'].nunique() #16 BTS sites
 LTE_DATA['E-UTRAN FDD Cell Name'].unique() #168 Radio Cells
 
-#Cleaning Dataset Selecting key features
-
-LTE_DATAtest = LTE_DATA[['longitude', 'latitude', 'cellId',
-                          'RRC Establishment Success Rate(%)',
-                          'E-RAB Setup Success Rate(%)',
-                          'Success Rate of Outgoing Handover(Cell)(%)',
-                          'S1-Signal Connection Establishment Success Rate(%)',
-                          'UL PRB Utilization Rate(%)',
-                          'DL PRB Utilization Rate(%)',
-                          'PS Traffic Volume(GB)_ITBBU&SDR',
-                          'DL E-UTRAN IP Throughput(Mbps)_ITBBU&SDR',
-                          'UL E-UTRAN IP Throughput(Mbps)_ITBBU&SDR',
-                          'Cell Availability(%)', 'Maximum Number of RRC Connection User',
-                          'DL QPSK Modulation Scheme Usage(%)',
-                          'DL 16QAM Modulation Scheme Usage(%)',
-                          'DL 64QAM Modulation Scheme Usage(%)']]
-
 # == Select KEY Radio Features required for forecasting
 LTE_DATA.columns
 
@@ -135,7 +118,7 @@ LTE_DATA1
 LTE_DATA1.columns
 LTE_DATA1.head()
 LTE_DATA1.dtypes
-
+LTE_DATA1.shape
 # === Convert 'Begin Time' to datetime ===
 
 LTE_DATA1.loc[:, 'Begin Time'] = pd.to_datetime(LTE_DATA1['Begin Time'])
@@ -152,62 +135,6 @@ LTE_DATA1.to_csv('exports/LTE DATA 1.csv')
 LTE_DATA2 = LTE_DATA1.copy()
 LTE_DATA2 = LTE_DATA2.set_index('Begin Time')
 LTE_DATA2
-
+LTE_DATA2.shape
 # == Writing Data to local Disk
 LTE_DATA2.to_csv('exports/LTE DATA2.csv')
-
-# === Recommended Features for Forecasting ===
-features_to_keep = [
-    # Target variables (choose one for Y)
-    'PS Traffic Volume(GB)_ITBBU&SDR',
-    'DL E-UTRAN IP Throughput(Mbps)_ITBBU&SDR',
-    'Cell DL Average Aggregated Throughput(Mbps)',
-    'DL PRB Utilization Rate(%)',
-
-    # Load & Resource KPIs
-    'UL PRB Utilization Rate(%)',
-    'DL PRB Available (Bandwidth)',
-    'Mean Number of RRC Connection User',
-    'Maximum Active User Number on User Plane',
-    'Maximum Number of RRC Connection User',
-
-    # Quality KPIs
-    'RRC Establishment Success Rate(%)',
-    'E-RAB Setup Success Rate(%)',
-    'E-RAB Drop Rate(%)',
-    'RRC Drop Rate(%)',
-    'Cell Uplink BLER(%)',
-    'Cell Downlink BLER(%)',
-
-    # RF/PHY Layer
-    'DL Average MCS',
-    'UL Average MCS',
-    'Average CQI(N/A)',
-    'Ratio of CQI>7 Percentage',
-    'Ratio of CQI >= 10 (64QAM)',
-
-    # Coverage and Interference
-    'LTE Average TA(km)',
-    'Average Cell RSSI(dBm)',
-    'Ratio of SINR<-3dB',
-    'Ratio of RSRP in Range of  [-110,-106]dBm',
-    'Ratio of RSRP in Range of  [-115,-111]dBm',
-    'Ratio of RSRP in Range of  [-120,-116]dBm',
-    'Ratio of RSRP in Range of  [-140,-121]dBm',
-
-    # Mobility
-    'Success Rate of Outgoing Handover(Cell)(%)',
-    'Success Rate of Intra-RAT Inter-frequency Cell Outgoing Handover(%)',
-    'Number of Ping-Pong Handover'
-]
-
-# === Keep identifier columns for per-cell tracking ===
-id_cols = ['eNodeB ID', 'eNodeB Name', 'E-UTRAN FDD Cell ID', 'E-UTRAN FDD Cell Name']
-
-# === Subset DataFrame ===
-subset_df = df[id_cols + features_to_keep]
-
-# === Optional: Save to CSV ===
-subset_df.to_csv("lte_kpi_forecasting_subset.csv")
-
-print("Subset created with shape:", subset_df.shape)
