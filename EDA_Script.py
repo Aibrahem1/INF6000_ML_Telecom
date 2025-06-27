@@ -120,20 +120,21 @@ LTE_DATA1.head()
 LTE_DATA1.dtypes
 LTE_DATA1.shape
 # === Convert 'Begin Time' to datetime ===
-
 LTE_DATA1.loc[:, 'Begin Time'] = pd.to_datetime(LTE_DATA1['Begin Time'])
-#or LTE_DATA2['Begin Time'] = pd.to_datetime(LTE_DATA2['Begin Time'])
+#or LTE_DATA1['Begin Time'] = pd.to_datetime(LTE_DATA1['Begin Time'])
 
-LTE_DATA1.dtypes
-#Explorting Data after converting to date
-LTE_DATA1[LTE_DATA1['Begin Time'].between('2024-12-24', '2024-12-25')]
+# === Explorting LTE_DATA1
 LTE_DATA1.head()
-# Writting to local disk
+LTE_DATA1.dtypes
+LTE_DATA1[LTE_DATA1['Begin Time'].between('2024-12-24', '2024-12-25')] # Coversion to date is successful
+
+# === Writting LTE data 1 to local disk
 LTE_DATA1.to_csv('exports/LTE DATA 1.csv')
 
 # === Set Begin Time as Index (for time series modeling) ===
 LTE_DATA2 = LTE_DATA1.copy()
 LTE_DATA2 = LTE_DATA2.set_index('Begin Time')
+# === Explorting LTE_DATA2
 LTE_DATA2
 LTE_DATA2.shape
 # == Writing Data to local Disk
