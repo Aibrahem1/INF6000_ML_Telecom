@@ -5,7 +5,7 @@ import pandas as pd
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 1000)
 
-# --------------------------- Ookla Dataset --------------------------
+# --------------------------- Libyana Ookla Dataset --------------------------
 #---Reading the CSV data into pandas dataframe
 OOKLA_DATA = pd.read_csv('Datasets/Ookla Rawdata.csv')
 #---Data Exploration
@@ -56,3 +56,158 @@ OOKLA_DATA_LY=OOKLA_DATA[OOKLA_DATA.loc[:,'country']=='Libya'] # subsetting the 
 OOKLA_DATA_LYN=OOKLA_DATA_LY[OOKLA_DATA_LY.loc[:,'ispName']=='Libyana'] # Subsetting the isp into the subsetted country
 ## Correlation for Ookla data analysis
 
+
+
+# --------------------------- Libyana LTE KPIs Dataset --------------------------
+import pandas as pd
+import numpy as np
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', 1000)
+#---- LTE Data 1 year
+LTE_DATA = pd.read_excel('Datasets/Libyana Dataset JUN25/History Query-LTE KPI one year daily.xlsx', sheet_name='Sheet0')
+# Exploring
+LTE_DATA['eNodeB Name'].nunique() #16 BTS sites
+LTE_DATA['E-UTRAN FDD Cell Name'].unique() #168 Radio Cells
+
+#Cleaning Dataset Selecting key features
+
+LTE_DATAtest = LTE_DATA[['longitude', 'latitude', 'cellId',
+                          'RRC Establishment Success Rate(%)',
+                          'E-RAB Setup Success Rate(%)',
+                          'Success Rate of Outgoing Handover(Cell)(%)',
+                          'S1-Signal Connection Establishment Success Rate(%)',
+                          'UL PRB Utilization Rate(%)',
+                          'DL PRB Utilization Rate(%)',
+                          'PS Traffic Volume(GB)_ITBBU&SDR',
+                          'DL E-UTRAN IP Throughput(Mbps)_ITBBU&SDR',
+                          'UL E-UTRAN IP Throughput(Mbps)_ITBBU&SDR',
+                          'Cell Availability(%)', 'Maximum Number of RRC Connection User',
+                          'DL QPSK Modulation Scheme Usage(%)',
+                          'DL 16QAM Modulation Scheme Usage(%)',
+                          'DL 64QAM Modulation Scheme Usage(%)']]
+
+# == Select KEY Radio Features required for forecasting
+LTE_DATA.columns
+
+LTE_DATA1 = LTE_DATA[[
+    #Time Stamp
+    'Begin Time',
+    'Granularity',
+    # Target variables (choose one for Y)
+    'PS Traffic Volume(GB)_ITBBU&SDR',
+    'DL E-UTRAN IP Throughput(Mbps)_ITBBU&SDR',
+    'Cell DL Average Aggregated Throughput(Mbps)',
+    'DL PRB Utilization Rate(%)',
+    # Load & Resource KPIs
+    'UL PRB Utilization Rate(%)',
+    'DL PRB Available (Bandwidth)',
+    'Mean Number of RRC Connection User',
+    'Maximum Active User Number on User Plane',
+    'Maximum Number of RRC Connection User',
+    # Quality KPIs
+    'RRC Establishment Success Rate(%)',
+    'E-RAB Setup Success Rate(%)',
+    'E-RAB Drop Rate(%)',
+    'RRC Drop Rate(%)',
+    'Cell Uplink BLER(%)',
+    'Cell Downlink BLER(%)',
+    # RF/PHY Layer
+    'DL Average MCS',
+    'UL Average MCS',
+    'Average CQI(N/A)',
+    'Ratio of CQI>7 Percentage',
+    'Ratio of CQI >= 10 (64QAM)',
+    # Coverage and Interference
+    'LTE Average TA(km)',
+    'Average Cell RSSI(dBm)',
+    'Ratio of SINR<-3dB',
+    'Ratio of RSRP in Range of  [-110,-106]dBm',
+    'Ratio of RSRP in Range of  [-115,-111]dBm',
+    'Ratio of RSRP in Range of  [-120,-116]dBm',
+    'Ratio of RSRP in Range of  [-140,-121]dBm',
+    # Mobility
+    'Success Rate of Outgoing Handover(Cell)(%)',
+    'Success Rate of Intra-RAT Inter-frequency Cell Outgoing Handover(%)',
+    'Number of Ping-Pong Handover']]
+
+# === Data Exploration
+LTE_DATA1
+LTE_DATA1.columns
+LTE_DATA1.head()
+LTE_DATA1.dtypes
+
+# === Convert 'Begin Time' to datetime ===
+
+LTE_DATA1.loc[:, 'Begin Time'] = pd.to_datetime(LTE_DATA1['Begin Time'])
+#or LTE_DATA2['Begin Time'] = pd.to_datetime(LTE_DATA2['Begin Time'])
+
+LTE_DATA1.dtypes
+#Explorting Data after converting to date
+LTE_DATA1[LTE_DATA1['Begin Time'].between('2024-12-24', '2024-12-25')]
+LTE_DATA1.head()
+# Writting to local disk
+LTE_DATA1.to_csv('exports/LTE DATA 1.csv')
+
+# === Set Begin Time as Index (for time series modeling) ===
+LTE_DATA2 = LTE_DATA1.copy()
+LTE_DATA2 = LTE_DATA2.set_index('Begin Time')
+LTE_DATA2
+
+# == Writing Data to local Disk
+LTE_DATA2.to_csv('exports/LTE DATA2.csv')
+
+# === Recommended Features for Forecasting ===
+features_to_keep = [
+    # Target variables (choose one for Y)
+    'PS Traffic Volume(GB)_ITBBU&SDR',
+    'DL E-UTRAN IP Throughput(Mbps)_ITBBU&SDR',
+    'Cell DL Average Aggregated Throughput(Mbps)',
+    'DL PRB Utilization Rate(%)',
+
+    # Load & Resource KPIs
+    'UL PRB Utilization Rate(%)',
+    'DL PRB Available (Bandwidth)',
+    'Mean Number of RRC Connection User',
+    'Maximum Active User Number on User Plane',
+    'Maximum Number of RRC Connection User',
+
+    # Quality KPIs
+    'RRC Establishment Success Rate(%)',
+    'E-RAB Setup Success Rate(%)',
+    'E-RAB Drop Rate(%)',
+    'RRC Drop Rate(%)',
+    'Cell Uplink BLER(%)',
+    'Cell Downlink BLER(%)',
+
+    # RF/PHY Layer
+    'DL Average MCS',
+    'UL Average MCS',
+    'Average CQI(N/A)',
+    'Ratio of CQI>7 Percentage',
+    'Ratio of CQI >= 10 (64QAM)',
+
+    # Coverage and Interference
+    'LTE Average TA(km)',
+    'Average Cell RSSI(dBm)',
+    'Ratio of SINR<-3dB',
+    'Ratio of RSRP in Range of  [-110,-106]dBm',
+    'Ratio of RSRP in Range of  [-115,-111]dBm',
+    'Ratio of RSRP in Range of  [-120,-116]dBm',
+    'Ratio of RSRP in Range of  [-140,-121]dBm',
+
+    # Mobility
+    'Success Rate of Outgoing Handover(Cell)(%)',
+    'Success Rate of Intra-RAT Inter-frequency Cell Outgoing Handover(%)',
+    'Number of Ping-Pong Handover'
+]
+
+# === Keep identifier columns for per-cell tracking ===
+id_cols = ['eNodeB ID', 'eNodeB Name', 'E-UTRAN FDD Cell ID', 'E-UTRAN FDD Cell Name']
+
+# === Subset DataFrame ===
+subset_df = df[id_cols + features_to_keep]
+
+# === Optional: Save to CSV ===
+subset_df.to_csv("lte_kpi_forecasting_subset.csv")
+
+print("Subset created with shape:", subset_df.shape)
