@@ -76,6 +76,11 @@ LTE_DATA1 = LTE_DATA[[
     #Time Stamp
     'Begin Time',
     'Granularity',
+    #BTS and Cells identifiers
+    'eNodeB ID',
+    'eNodeB Name',
+    'E-UTRAN FDD Cell ID',
+    'E-UTRAN FDD Cell Name',
     # Target variables (choose one for Y)
     'PS Traffic Volume(GB)_ITBBU&SDR',
     'DL E-UTRAN IP Throughput(Mbps)_ITBBU&SDR',
@@ -121,8 +126,6 @@ LTE_DATA1.dtypes
 LTE_DATA1.shape
 # === Convert 'Begin Time' to datetime ===
 LTE_DATA1.loc[:, 'Begin Time'] = pd.to_datetime(LTE_DATA1['Begin Time'])
-#or LTE_DATA1['Begin Time'] = pd.to_datetime(LTE_DATA1['Begin Time'])
-
 # === Explorting LTE_DATA1
 LTE_DATA1.head()
 LTE_DATA1.dtypes
@@ -139,3 +142,9 @@ LTE_DATA2
 LTE_DATA2.shape
 # == Writing Data to local Disk
 LTE_DATA2.to_csv('exports/LTE DATA2.csv')
+
+# ==== plots to check traffic trend
+
+import matplotlib as plt
+LTE_DATA1
+LTE_DATA1['']
