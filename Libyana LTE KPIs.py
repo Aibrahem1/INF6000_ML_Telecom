@@ -135,8 +135,11 @@ LTEKPIS_clean[(LTEKPIS_clean['enodeb_name'] == 'TRI055L') &
               (LTEKPIS_clean['timestamp'].between('2024-12-24', '2025-01-25')) &
               (LTEKPIS_clean['cell_id']==1)]
 
-# Descriptive Statistics summary
+#### ===== Descriptive Statistics summary
+import pandas as pd
+#Descriptive Statistics for Numerical variables
 LTEKPIS_clean_numeric_data = LTEKPIS_clean.select_dtypes(include='number')
+
 LTEKPIS_clean_numeric_data.dtypes
 
 summary_statistics = pd.DataFrame({
@@ -152,7 +155,13 @@ summary_statistics = pd.DataFrame({
     'Missing': LTEKPIS_clean_numeric_data.isna().sum(),
     'Row count': len(LTEKPIS_clean_numeric_data)
 })
-summary_statistics.index.name = 'Column'
+# Rename index to 'Column' and convert it into a column in the DataFrame
+summary_statistics.index.name = 'Feature'
 summary_statistics.reset_index(inplace=True)
-
+#Exporting the Statitics to local Disk
 summary_statistics.to_excel("exports/Libyana LTE KPIs/summary_statistics_python.xlsx", index=False)
+
+# Descriptive statistics for categorical variables
+LTEKPIS_clean.dtypes
+
+LTEKPIS_clean.['enodeb_name'].value_counts()
