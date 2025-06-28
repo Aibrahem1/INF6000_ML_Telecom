@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 #Setting the pd configuration
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 100)
@@ -119,22 +118,41 @@ LTEKPIS_clean.dtypes # timestamp is not in the correct formate, therefore, it ne
 ## == modify the data type for timestamp feature
 LTEKPIS_clean['timestamp'] = pd.to_datetime(LTEKPIS_clean['timestamp'])
 
-LTEKPIS_clean.dtypes # data type of time stamp has successfully been changed
 LTEKPIS_clean.shape # to confirm that the data structure hasn't changed
-
+LTEKPIS_clean.dtypes # data type of time stamp has successfully been changed
+#Writting data to local disk 'overwritting existing one'
 LTEKPIS_clean.to_csv('exports/Libyana LTE KPIs/LTEKPIS_clean.csv')
-LTEKPIS_clean[LTEKPIS_clean['timestamp'].between('2024-12-24', '2024-12-25')] #testing
 
-#subsetting technique 1
+## subsetting
+LTEKPIS_clean[LTEKPIS_clean['timestamp'].between('2024-12-24', '2024-12-25')] #testing
+#subsetting 1
 LTEKPIS_clean[np.logical_and(
     LTEKPIS_clean['timestamp'].between('2024-12-24', '2024-12-25'),
     LTEKPIS_clean['enodeb_name']=='TRI055L'
 )]
-#subsetting techinque 2
-LTEKPIS_clean.loc[(LTEKPIS_clean['enodeb_name'] == 'TRI055L') &
-                  (LTEKPIS_clean['timestamp'].between('2024-12-24', '2025-01-25')) &
-                  (LTEKPIS_clean['cell_id']==1)]
+# subsetting 2 (best-most common)
+LTEKPIS_clean[(LTEKPIS_clean['enodeb_name'] == 'TRI055L') &
+              (LTEKPIS_clean['timestamp'].between('2024-12-24', '2025-01-25')) &
+              (LTEKPIS_clean['cell_id']==1)]
 
-LTEKPIS_clean.shape # to confirm that the data structure hasn't changed
+# Descriptive Statistics summary
+LTEKPIS_clean_numeric_data = LTEKPIS_clean.select_dtypes(include='number')
+LTEKPIS_clean_numeric_data.dtypes
 
-LTEKPIS_clean.to_csv('exports/Libyana LTE KPIs/LTEKPIS_clean.csv')
+summary_statistics = pd.DataFrame({
+    'Min': LTEKPIS_clean_numeric_data.min(),
+    'Max': LTEKPIS_clean_numeric_data.max(),
+    'Mean': LTEKPIS_clean_numeric_data.mean(),
+    'Std. Deviation': LTEKPIS_clean_numeric_data.std(),
+    'Variance': LTEKPIS_clean_numeric_data.var(),
+    'Skewness': LTEKPIS_clean_numeric_data.skew(),
+    'Kurtosis': LTEKPIS_clean_numeric_data.kurtosis(),
+    'Sum': LTEKPIS_clean_numeric_data.sum(),
+    'Median': LTEKPIS_clean_numeric_data.median(),
+    'Missing': LTEKPIS_clean_numeric_data.isna().sum(),
+    'Row count': len(LTEKPIS_clean_numeric_data)
+})
+summary_statistics.index.name = 'Column'
+summary_statistics.reset_index(inplace=True)
+
+summary_statistics.to_excel("exports/Libyana LTE KPIs/summary_statistics_python.xlsx", index=False)
