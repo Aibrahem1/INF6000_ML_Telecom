@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 #Setting the pd configuration
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 100)
@@ -105,11 +106,35 @@ LTEKPIS_clean = LTEKPIS_raw[[
     'Success Rate of Intra-RAT Inter-frequency Cell Outgoing Handover(%)': 'intra_rat_ho_success_rate_%',
     'Number of Ping-Pong Handover': 'no_ping_pong_ho_count'
 })
-## = Exporting Data to local disk
+## == Exporting Data to local disk
 LTEKPIS_clean.to_csv('exports/Libyana LTE KPIs/LTEKPIS_clean.csv')
+
 ## == Exploratory Data analysis of the cleaned data
 LTEKPIS_clean.columns
 LTEKPIS_clean['enodeb_name'].nunique() # A total of 16 eNodeBs are in the dataset
 LTEKPIS_clean['cell_name'].nunique()   # A total of 168 cells are in the dataset
 LTEKPIS_clean.shape #Data contains (61647 x 36)
+LTEKPIS_clean.dtypes # timestamp is not in the correct formate, therefore, it needs to be changed to date format
 
+## == modify the data type for timestamp feature
+LTEKPIS_clean['timestamp'] = pd.to_datetime(LTEKPIS_clean['timestamp'])
+
+LTEKPIS_clean.dtypes # data type of time stamp has successfully been changed
+LTEKPIS_clean.shape # to confirm that the data structure hasn't changed
+
+LTEKPIS_clean.to_csv('exports/Libyana LTE KPIs/LTEKPIS_clean.csv')
+LTEKPIS_clean[LTEKPIS_clean['timestamp'].between('2024-12-24', '2024-12-25')] #testing
+
+#subsetting technique 1
+LTEKPIS_clean[np.logical_and(
+    LTEKPIS_clean['timestamp'].between('2024-12-24', '2024-12-25'),
+    LTEKPIS_clean['enodeb_name']=='TRI055L'
+)]
+#subsetting techinque 2
+LTEKPIS_clean.loc[(LTEKPIS_clean['enodeb_name'] == 'TRI055L') &
+                  (LTEKPIS_clean['timestamp'].between('2024-12-24', '2025-01-25')) &
+                  (LTEKPIS_clean['cell_id']==1)]
+
+LTEKPIS_clean.shape # to confirm that the data structure hasn't changed
+
+LTEKPIS_clean.to_csv('exports/Libyana LTE KPIs/LTEKPIS_clean.csv')
