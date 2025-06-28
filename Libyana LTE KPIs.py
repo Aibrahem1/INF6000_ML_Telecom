@@ -184,17 +184,17 @@ import seaborn as sns
 # Plotting correlation heatmap
 plt.figure(figsize=(35,25))
 sns.heatmap(corr_LTEKPI_clean_numeric,
-            annot=True,
-            fmt='.2f',
-            cmap='coolwarm',
-            square=True,
-            cbar_kws={'shrink': 0.5},
-            annot_kws={'fontsize': 6}  # <-- sets value label font size inside boxes
+            annot=True,                 # Display correlation values inside the heatmap cells
+            fmt='.2f',                  # Format the numbers to 2 decimal places
+            cmap='coolwarm',            # Diverging color palette from blue to red
+            square=True,                # Shrink the color bar to make space for plot
+            cbar_kws={'shrink': 0.5},   # Forcing perfect square for visual asthetics
+            annot_kws={'fontsize': 6}  # <-- reducing font size inside the boxed for clarity
             )
-plt.title('Pair-wise Correlation Matrix of LTE KPIs')
+plt.title('Pair-wise Correlation Matrix of LTE KPIs') # Set plot title
 plt.xticks(rotation= 45, fontsize = 8, ha='right')
 plt.xlabel('KPI Features')
 plt.yticks(fontsize = 8)
-plt.ylabel('KPI Features')
-plt.tight_layout()
+plt.ylabel('KPI Features')                            # otate and align x-axis tick labels
+plt.tight_layout()                                    # Auto-adjust layout to prevent overlap
 plt.show(block= True)
