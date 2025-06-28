@@ -61,6 +61,7 @@ OOKLA_DATA_LYN=OOKLA_DATA_LY[OOKLA_DATA_LY.loc[:,'ispName']=='Libyana'] # Subset
 # --------------------------- Libyana LTE KPIs Dataset --------------------------
 import pandas as pd
 import numpy as np
+
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 1000)
 #---- LTE Data 1 year
@@ -123,7 +124,8 @@ LTE_DATA1
 LTE_DATA1.columns
 LTE_DATA1.head()
 LTE_DATA1.dtypes
-LTE_DATA1.shape
+LTE_DATA1.shape #(61647, 36)
+
 # === Convert 'Begin Time' to datetime ===
 LTE_DATA1.loc[:, 'Begin Time'] = pd.to_datetime(LTE_DATA1['Begin Time'])
 # === Explorting LTE_DATA1
@@ -139,12 +141,79 @@ LTE_DATA2 = LTE_DATA1.copy()
 LTE_DATA2 = LTE_DATA2.set_index('Begin Time')
 # === Explorting LTE_DATA2
 LTE_DATA2
-LTE_DATA2.shape
+LTE_DATA2.shape #(61647, 35)
 # == Writing Data to local Disk
 LTE_DATA2.to_csv('exports/LTE DATA2.csv')
 
 # ==== plots to check traffic trend
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
-import matplotlib as plt
-LTE_DATA1
-LTE_DATA1['']
+
+LTE_DATA1.columns
+
+(LTE_DATA[LTE_DATA['E-UTRAN FDD Cell Name'] == 'TRI055L-1'].plot(kind='scatter',
+                                                                 x='Begin Time',
+                                                                 y='DL PRB Utilization Rate(%)'))
+plt.show(block=True)
+
+
+# Filter and sort data
+TRI055L_1 = LTE_DATA[LTE_DATA['E-UTRAN FDD Cell Name'] == 'TRI055L-1'].sort_values('Begin Time')
+# Plot
+(TRI055L_1.plot(kind='scatter',
+                    x='Begin Time',
+                    y='DL PRB Utilization Rate(%)',
+                    figsize=(10, 5),
+                    title='DL PRB Utilization Over Time – TRI055L-1'))
+ax.xaxis.set_major_locator(mdates.MonthLocator())
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
+# Rotate and clean up
+plt.xticks(rotation=45)
+plt.xlabel('Month')
+plt.ylabel('DL PRB Utilization Rate (%)')
+plt.grid(True, linestyle='--', alpha=0.4)
+plt.tight_layout()
+plt.show(block=True)
+
+# Plot and assign to ax
+ax = TRI055L_1.plot(kind='scatter',
+                    x='Begin Time',
+                    y='DL PRB Utilization Rate(%)',
+                    figsize=(10, 5),
+                    title='DL PRB Utilization Over Time – TRI055L-1')
+# Set monthly x-axis ticks
+ax.xaxis.set_major_locator(mdates.MonthLocator())
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
+# Rotate and label ticks
+plt.xticks(rotation=45)
+plt.xlabel('Month')
+plt.ylabel('DL PRB Utilization Rate (%)')
+plt.grid(True, linestyle='--', alpha=0.4)
+plt.tight_layout()
+# Show plot
+plt.show()
+
+
+# Ensure Begin Time is datetime and sorted
+TRI055L_1['Begin Time'] = pd.to_datetime(TRI055L_1['Begin Time'])
+TRI055L_1 = TRI055L_1.sort_values('Begin Time')
+
+# Create the scatter plot
+plt.figure(figsize=(10, 5))
+plt.scatter(TRI055L_1['Begin Time'], TRI055L_1['DL PRB Utilization Rate(%)'], s=10)
+
+# Extract unique months for ticks
+monthly_ticks = TRI055L_1['Begin Time'].dt.to_period('M').drop_duplicates().dt.to_timestamp()
+monthly_labels = monthly_ticks.dt.strftime('%b')
+
+# Apply to x-axis
+plt.xticks(ticks=monthly_ticks, labels=monthly_labels, rotation=45)
+
+# Labeling
+plt.xlabel('Month')
+plt.ylabel('DL PRB Utilization Rate (%)')
+plt.title('DL PRB Utilization Over Time – TRI055L-1')
+plt.grid(True, linestyle='--', alpha=0.4)
+plt.tight_layout()
+plt.show()
