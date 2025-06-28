@@ -105,6 +105,8 @@ LTEKPIS_clean = LTEKPIS_raw[[
     'Success Rate of Intra-RAT Inter-frequency Cell Outgoing Handover(%)': 'intra_rat_ho_success_rate_%',
     'Number of Ping-Pong Handover': 'no_ping_pong_ho_count'
 })
+
+
 ## == Exporting Data to local disk
 LTEKPIS_clean.to_csv('exports/Libyana LTE KPIs/LTEKPIS_clean.csv')
 
@@ -112,8 +114,10 @@ LTEKPIS_clean.to_csv('exports/Libyana LTE KPIs/LTEKPIS_clean.csv')
 LTEKPIS_clean.columns
 LTEKPIS_clean['enodeb_name'].nunique() # A total of 16 eNodeBs are in the dataset
 LTEKPIS_clean['cell_name'].nunique()   # A total of 168 cells are in the dataset
-LTEKPIS_clean.shape #Data contains (61647 x 36)
+LTEKPIS_clean.shape #Data contains (61647 x 35)
 LTEKPIS_clean.dtypes # timestamp is not in the correct formate, therefore, it needs to be changed to date format
+
+LTEKPIS_clean.drop(columns='enodeb_id', inplace=True) #unwanted redundant
 
 ## == modify the data type for timestamp feature
 LTEKPIS_clean['timestamp'] = pd.to_datetime(LTEKPIS_clean['timestamp'])
@@ -164,4 +168,6 @@ summary_statistics.to_excel("exports/Libyana LTE KPIs/summary_statistics_python.
 # Descriptive statistics for categorical variables
 LTEKPIS_clean.dtypes
 
-LTEKPIS_clean.['enodeb_name'].value_counts()
+LTEKPIS_clean['enodeb_name'].unique()
+LTEKPIS_clean['enodeb_id'].nunique()
+LTEKPIS_clean['enodeb_name'].value_counts()
