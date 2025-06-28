@@ -171,3 +171,30 @@ LTEKPIS_clean.dtypes
 LTEKPIS_clean['enodeb_name'].unique()
 LTEKPIS_clean['enodeb_id'].nunique()
 LTEKPIS_clean['enodeb_name'].value_counts()
+
+
+## === Correlation Analysis
+#Computes Pearson correlation (linear relationship) Range: [-1, 1]
+corr_LTEKPI_clean_numeric = LTEKPIS_clean_numeric_data.corr(method='pearson')
+#Writting Correlation Matrix to disk
+corr_LTEKPI_clean_numeric.to_excel('exports/Libyana LTE KPIs/corr_LTEKPI_clean_numeric.xlsx', index=True)
+## Correlation Visualisation
+import matplotlib.pyplot as plt
+import seaborn as sns
+# Plotting correlation heatmap
+plt.figure(figsize=(35,25))
+sns.heatmap(corr_LTEKPI_clean_numeric,
+            annot=True,
+            fmt='.2f',
+            cmap='coolwarm',
+            square=True,
+            cbar_kws={'shrink': 0.5},
+            annot_kws={'fontsize': 6}  # <-- sets value label font size inside boxes
+            )
+plt.title('Pair-wise Correlation Matrix of LTE KPIs')
+plt.xticks(rotation= 45, fontsize = 8, ha='right')
+plt.xlabel('KPI Features')
+plt.yticks(fontsize = 8)
+plt.ylabel('KPI Features')
+plt.tight_layout()
+plt.show(block= True)
