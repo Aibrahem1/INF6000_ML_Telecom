@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 #Setting the pd configuration
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 100)
-#importing Libyana LTE KPI Data
+# **** importing Libyana LTE KPI Data
 LTEKPIS_raw = pd.read_excel('Datasets/Libyana Dataset JUN25/History Query-LTE KPI one year daily.xlsx',
                         sheet_name='Sheet0')
 #Exploratory DATA Analysis
@@ -106,7 +106,6 @@ LTEKPIS_clean = LTEKPIS_raw[[
     'Number of Ping-Pong Handover': 'no_ping_pong_ho_count'
 })
 
-
 ## == Exporting Data to local disk
 LTEKPIS_clean.to_csv('exports/Libyana LTE KPIs/LTEKPIS_clean.csv')
 
@@ -163,6 +162,7 @@ summary_statistics = pd.DataFrame({
 summary_statistics.index.name = 'Feature'
 summary_statistics.reset_index(inplace=True)
 #Exporting the Statitics to local Disk
+summary_statistics
 summary_statistics.to_excel("exports/Libyana LTE KPIs/summary_statistics_python.xlsx", index=False)
 
 # Descriptive statistics for categorical variables
@@ -192,9 +192,9 @@ sns.heatmap(corr_LTEKPI_clean_numeric,
             annot_kws={'fontsize': 6}  # <-- reducing font size inside the boxed for clarity
             )
 plt.title('Pair-wise Correlation Matrix of LTE KPIs') # Set plot title
-plt.xticks(rotation= 45, fontsize = 8, ha='right')
+plt.xticks(rotation= 45, fontsize = 8, ha='right')    # Rotate and align x-axis tick labels
 plt.xlabel('KPI Features')
 plt.yticks(fontsize = 8)
-plt.ylabel('KPI Features')                            # otate and align x-axis tick labels
+plt.ylabel('KPI Features')
 plt.tight_layout()                                    # Auto-adjust layout to prevent overlap
 plt.show(block= True)
